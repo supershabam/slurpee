@@ -1,25 +1,31 @@
 # slurpee
 
-I subscribe to a redis server and give you a channel of bytes. I handle disconnects and reconnects for you. Just think about all those tasty bytes you could be processing.
+Given a redis uri and a subscription channel, I provide you with a go channel of bytes to operate on at your leasure.
 
 ## api
 
 ```go
 import(
 	"github.com/supershabam/slurpee"
+	"time"
 )
 
-var s, err := slurpee.NewSlurpee("redis://u:password@localhost", "my-channel")
-if err != nil {
-	panic(err)
+var s := slurpee.NewSlurpee("redis://u:password@localhost", "my-channel")
+go func() {
+	select {
+	case <- time.After(time.Second):
+		s.Stop()
+	}
+}()
+// s.C channel is closed when the redis connection dies, or slurpee is stopped
+for bytes := range s.C {
+	fmt.Println("got bytes! %v", bytes)
 }
-for b := range s.Channel() {
-	fmt.Println("got bytes! %v", b)	  
-	// handle(b)
+// s.Err will be non-nil if there was a redis error
+if s.Err != nil {
+	fmt.Printf("error: %v\n", s.Err)
 }
 ```
-
-This example merely prints the bytes out to the console, but try running it and restarting your redis server.
 
 ## license
 
