@@ -1,6 +1,6 @@
 # slurpee
 
-Given a redis uri and a subscription channel, I provide you with a go channel of bytes to operate on at your leasure.
+Given a redis uri and a subscription channel, I provide you with a go channel of bytes to operate on at your leisure.
 
 ## api
 
